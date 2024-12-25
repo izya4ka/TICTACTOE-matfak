@@ -2,56 +2,45 @@
 #include "Player.h"
 using namespace std;
 
-ComputerPlayer::ComputerPlayer() : level(1), playerSymbol('X'), opponentSymbol('O') {
+Player::Player(string name, char symbol, Board& _board) : playerSymbol(symbol), opponentSymbol(symbol == 'X' ? 'O' : 'X'), board(_board) {}
+
+Player::Player(short difficulty, char symbol, Board& _board) : level(difficulty), playerSymbol(symbol), opponentSymbol(symbol == 'X' ? 'O' : 'X'), board(_board) {
     srand(static_cast<unsigned>(time(nullptr)));
 }
 
-ComputerPlayer::ComputerPlayer(short difficulty, char symbol) : level(difficulty), playerSymbol(symbol), opponentSymbol(symbol == 'X' ? 'O' : 'X') {
-    srand(static_cast<unsigned>(time(nullptr)));
+Player::~Player() {
+    cout << "Объект игрока " << "[" << name << "]" << " уничтожен!" << endl;
 }
 
-ComputerPlayer::~ComputerPlayer() {
-    cout << "ComputerPlayer object destroyed." << endl;
-}
-
-int ComputerPlayer::chooseMove(const vector<char>& board) {
-    vector<int> availableMoves = getAvailableMoves(board);
+int Player::chooseMove() {
+    vector<int> availableMoves = board.getAvailableMoves();
     if (availableMoves.empty()) {
-        throw runtime_error("No available moves.");
+        return -1;
     }
 
     switch (level) {
     case 1:
-        return chooseRandomMove(availableMoves);
+        return chooseRandomMove();
     case 2:
-        return chooseOptimalMove(board, availableMoves);
+        return chooseOptimalMove();
     default:
-        throw logic_error("Invalid difficulty level.");
+        throw logic_error("Неверный уровень сложности!");
     }
 }
 
-vector<int> ComputerPlayer::getAvailableMoves(const vector<char>& board) {
-    vector<int> moves;
-    for (size_t i = 0; i < board.size(); ++i) {
-        if (board[i] == ' ') {
-            moves.push_back(i);
-        }
-    }
-    return moves;
-}
-
-int ComputerPlayer::chooseRandomMove(const vector<int>& availableMoves) {
+int Player::chooseRandomMove() {
+    const vector<int>& availableMoves = board.getAvailableMoves();
     int randomIndex = rand() % availableMoves.size();
     return availableMoves[randomIndex];
 }
 
-int ComputerPlayer::chooseOptimalMove(const vector<char>& board, const vector<int>& availableMoves) {
+int Player::chooseOptimalMove() {
     int bestScore = numeric_limits<int>::min();
     int bestMove = -1;
 
-    for (int move : availableMoves) {
-        vector<char> boardCopy = board;
-        boardCopy[move] = playerSymbol;
+    for (int move : board.getAvailableMoves()) {
+        Board boardCopy(board);
+        boardCopy.tryToDoStep(move, playerSymbol);
         int score = minimax(boardCopy, false);
         if (score > bestScore) {
             bestScore = score;
@@ -62,40 +51,29 @@ int ComputerPlayer::chooseOptimalMove(const vector<char>& board, const vector<in
     return bestMove;
 }
 
-int ComputerPlayer::minimax(vector<char> board, bool isMaximizing) {
-    if (isWinningState(board, playerSymbol)) return 10;
-    if (isWinningState(board, opponentSymbol)) return -10;
-    if (getAvailableMoves(board).empty()) return 0;
+int Player::minimax(Board _board, bool isMaximizing) {
+    if (_board.getWinner() == playerSymbol) return 10;
+    if (_board.getWinner() == opponentSymbol) return -10;
+    if (!_board.getAvailableMoves().empty()) return 0;
 
     if (isMaximizing) {
         int bestScore = numeric_limits<int>::min();
-        for (int move : getAvailableMoves(board)) {
-            board[move] = playerSymbol;
+        for (int move : _board.getAvailableMoves()) {
+            _board.tryToDoStep(move, playerSymbol);
             int score = minimax(board, false);
-            board[move] = ' ';
+            _board.tryToDoStep(move, ' ');
             bestScore = max(bestScore, score);
         }
         return bestScore;
     }
     else {
         int bestScore = numeric_limits<int>::max();
-        for (int move : getAvailableMoves(board)) {
-            board[move] = opponentSymbol;
+        for (int move : _board.getAvailableMoves()) {
+            _board.tryToDoStep(move, opponentSymbol);
             int score = minimax(board, true);
-            board[move] = ' ';
+            _board.tryToDoStep(move, ' ');
             bestScore = min(bestScore, score);
         }
         return bestScore;
     }
-}
-
-bool ComputerPlayer::isWinningState(const vector<char>& board, char symbol) {
-    return (board[0] == symbol && board[1] == symbol && board[2] == symbol) ||
-        (board[3] == symbol && board[4] == symbol && board[5] == symbol) ||
-        (board[6] == symbol && board[7] == symbol && board[8] == symbol) ||
-        (board[0] == symbol && board[3] == symbol && board[6] == symbol) ||
-        (board[1] == symbol && board[4] == symbol && board[7] == symbol) ||
-        (board[2] == symbol && board[5] == symbol && board[8] == symbol) ||
-        (board[0] == symbol && board[4] == symbol && board[8] == symbol) ||
-        (board[2] == symbol && board[4] == symbol && board[6] == symbol);
 }

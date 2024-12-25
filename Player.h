@@ -4,41 +4,40 @@
 #include <cstdlib>
 #include <ctime>
 #include <limits>
+#include "board.h"
 
 using namespace std;
 
-class ComputerPlayer {
+class Player {
 private:
+    string name;
+    Board& board;
+
     short level;
     char playerSymbol;
     char opponentSymbol;
 
 public:
-    // Конструктор по умолчанию
-    ComputerPlayer();
+    // Конструктор для игрока
+    Player(string name, char symbol, Board& _board);
 
-    // Конструктор с инициализацией уровня сложности
-    ComputerPlayer(short difficulty, char symbol);
+    // Конструктор для игрока-компьютера
+    Player(short difficulty, char symbol, Board& _board);
 
     // Деструктор
-    ~ComputerPlayer();
+    ~Player();
 
     // Метод для выбора хода
-    int chooseMove(const vector<char>& board);
+    int chooseMove();
 
 private:
-    // Получение списка доступных ходов
-    vector<int> getAvailableMoves(const vector<char>& board);
 
     // Выбор случайного хода (для начинающего игрока)
-    int chooseRandomMove(const vector<int>& availableMoves);
+    int chooseRandomMove();
 
     // Выбор оптимального хода (для продвинутого игрока)
-    int chooseOptimalMove(const vector<char>& board, const std::vector<int>& availableMoves);
+    int chooseOptimalMove();
 
     // Алгоритм Минимакс
-    int minimax(vector<char> board, bool isMaximizing);
-
-    // Проверка, является ли текущее состояние выигрышным
-    bool isWinningState(const vector<char>& board, char symbol);
+    int minimax(Board _board, bool isMaximizing);
 };
