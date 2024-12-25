@@ -2,9 +2,13 @@
 #include "Player.h"
 using namespace std;
 
-Player::Player(string name, char symbol, Board& _board) : playerSymbol(symbol), opponentSymbol(symbol == 'X' ? 'O' : 'X'), board(_board) {}
+Player::Player()
+{
+}
 
-Player::Player(short difficulty, char symbol, Board& _board) : level(difficulty), playerSymbol(symbol), opponentSymbol(symbol == 'X' ? 'O' : 'X'), board(_board) {
+Player::Player(string name, char symbol, Board* _board) : playerSymbol(symbol), opponentSymbol(symbol == 'X' ? 'O' : 'X'), board(_board), level(-1) {}
+
+Player::Player(short difficulty, char symbol, Board* _board) : level(difficulty), playerSymbol(symbol), opponentSymbol(symbol == 'X' ? 'O' : 'X'), board(_board) {
     srand(static_cast<unsigned>(time(nullptr)));
 }
 
@@ -12,8 +16,13 @@ Player::~Player() {
     cout << "Объект игрока " << "[" << name << "]" << " уничтожен!" << endl;
 }
 
+void Player::doMove(int move)
+{
+    board->tryToDoStep(move, playerSymbol);
+}
+
 int Player::chooseMove() {
-    vector<int> availableMoves = board.getAvailableMoves();
+    vector<int> availableMoves = board->getAvailableMoves();
     if (availableMoves.empty()) {
         return -1;
     }
@@ -29,7 +38,7 @@ int Player::chooseMove() {
 }
 
 int Player::chooseRandomMove() {
-    const vector<int>& availableMoves = board.getAvailableMoves();
+    const vector<int>& availableMoves = board->getAvailableMoves();
     int randomIndex = rand() % availableMoves.size();
     return availableMoves[randomIndex];
 }
@@ -38,7 +47,7 @@ int Player::chooseOptimalMove() {
     int bestScore = numeric_limits<int>::min();
     int bestMove = -1;
 
-    for (int move : board.getAvailableMoves()) {
+    for (int move : board->getAvailableMoves()) {
         Board boardCopy(board);
         boardCopy.tryToDoStep(move, playerSymbol);
         int score = minimax(boardCopy, false);

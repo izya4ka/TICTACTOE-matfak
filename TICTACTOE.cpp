@@ -1,6 +1,10 @@
 ﻿#include <iostream>
+#include "Menu.h"
+using namespace std;
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    setlocale(LC_ALL, "rus");
+    Menu menu{};
+    menu.startScreen();
 }

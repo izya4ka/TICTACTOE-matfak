@@ -11,21 +11,26 @@ using namespace std;
 class Player {
 private:
     string name;
-    Board& board;
+    Board* board;
 
     short level;
     char playerSymbol;
     char opponentSymbol;
 
 public:
+    Player();
+
     // Конструктор для игрока
-    Player(string name, char symbol, Board& _board);
+    Player(string name, char symbol, Board* _board);
 
     // Конструктор для игрока-компьютера
-    Player(short difficulty, char symbol, Board& _board);
+    Player(short difficulty, char symbol, Board* _board);
 
     // Деструктор
     ~Player();
+
+    // Метод для совершения хода настоящим игроком
+    void doMove(int move);
 
     // Метод для выбора хода
     int chooseMove();
