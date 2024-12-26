@@ -6,7 +6,7 @@ Player::Player()
 {
 }
 
-Player::Player(string name, char symbol, Board* _board) : playerSymbol(symbol), opponentSymbol(symbol == 'X' ? 'O' : 'X'), board(_board), level(-1) {}
+Player::Player(string name, char symbol, Board* _board) : playerSymbol(symbol), opponentSymbol(symbol == 'X' ? 'O' : 'X'), board(_board), level(0) {}
 
 Player::Player(short difficulty, char symbol, Board* _board) : level(difficulty), playerSymbol(symbol), opponentSymbol(symbol == 'X' ? 'O' : 'X'), board(_board) {
     srand(static_cast<unsigned>(time(nullptr)));
@@ -14,6 +14,16 @@ Player::Player(short difficulty, char symbol, Board* _board) : level(difficulty)
 
 Player::~Player() {
     cout << "Объект игрока " << "[" << name << "]" << " уничтожен!" << endl;
+}
+
+char Player::getSym()
+{
+    return playerSymbol;
+}
+
+bool Player::isBot()
+{
+    return (level != 0) ? true : false;
 }
 
 void Player::doMove(int move)

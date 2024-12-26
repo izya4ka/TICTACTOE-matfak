@@ -29,6 +29,9 @@ public:
     // Деструктор
     ~Player();
 
+    char getSym();
+    bool isBot();
+
     // Метод для совершения хода настоящим игроком
     void doMove(int move);
 
