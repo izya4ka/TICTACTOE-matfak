@@ -13,20 +13,9 @@ Menu::Menu() {}
 
 void Menu::startScreen()
 {
-	int player_select = 1;
-	while (true) {
-		cout << "Выберите кто будет играть:" << endl;
-		if (player_select == 1) cout << ">> ";cout << "1. Игрок против игрока" << endl;
-		if (player_select == 2) cout << ">> ";cout << "2. Игрок против компьютера (начинающий)" << endl;
-		if (player_select == 3) cout << ">> ";cout << "3. Игрок против компьютера (продвинутый)" << endl;
-		char ch = _getch();
-		if (ch == 80) player_select++;
-		else if (ch == 72) player_select--;
-		if (player_select > 3) player_select = 1;
-		if (player_select < 1) player_select = 3;
-		system("cls");
-		if (ch == ' ') break;
-	}
+	vector<string> options_start = { "Игрок против игрока", "Игрок против компьютера (начинающий)", "Игрок против компьютера (продвинутый)" };
+	int player_select = getChoice("Выберите режим: ", options_start);
+
 	string first_player;
 	string second_player = "Компьютер";
 	cout << "Введите имя первого игрока: ";
@@ -39,20 +28,11 @@ void Menu::startScreen()
 	}
 	system("cls");
 
-	int choice = 1;
-	while (true) {
-		cout << "Выберите кто ходит первым:" << endl;
-		if (choice == 1) cout << ">> ";cout << "1. Первый игрок" << endl;
-		if (choice == 2) cout << ">> ";cout << "2. Второй игрок" << (player_select > 1 ? " (компьютер)" : "") << endl;
-		char ch = _getch();
-		if (ch == 80) choice++;
-		else if (ch == 72) choice--;
-		if (choice > 2) choice = 1;
-		if (choice < 1) choice = 2;
-		system("cls");
-		if (ch == ' ') break;
-	}
-
+	vector<string> options_start_move = {
+		"Первый игрок",
+		string("Второй игрок") + string(player_select > 1 ? " (компьютер)" : "")
+	};
+	int choice = getChoice("Кто ходит первым: ", options_start_move);
 	char symbol = (choice == 1) ? 'O' : 'X';
 
 	if (player_select > 1) { 
@@ -65,6 +45,26 @@ void Menu::startScreen()
 		game.run();
 	}
 
+}
+
+int Menu::getChoice(string welcome, vector<string> options)
+{
+	int choice = 1;
+	while (true) {
+		cout << welcome << endl;
+		for (int i = 0; i < options.size(); i++) {
+			if (choice == i + 1) cout << ">> ";
+			cout << i+1 << ". " << options[i] << endl;
+		}
+		char ch = _getch();
+		if (ch == 80) choice++;
+		else if (ch == 72) choice--;
+		if (choice > options.size()) choice = 1;
+		if (choice < 1) choice = options.size();
+		system("cls");
+		if (ch == ' ') break;
+	}
+	return choice;
 }
 
 Menu::~Menu() {

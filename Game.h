@@ -8,12 +8,12 @@ class Game
 private:
 	Player firstPlayer;
 	Player secondPlayer;
-	bool isBot;
+	bool isBot; // Поле определяющее, ведётся ли игра с компьюетером
 	Board board;
 public:
-	Game(string firstName, char symbol, short difficulty);
-	Game(string firstName, char symbol, string secondName);
-	void run();
+	Game(string firstName, char symbol, short difficulty); // Конструктор для игры с компьютером
+	Game(string firstName, char symbol, string secondName); // Конструктор для игры с игроком
+	void run(); // Функция запуска игры
 
 	~Game();
 };
