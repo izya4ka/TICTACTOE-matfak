@@ -62,6 +62,7 @@ void Menu::startScreen()
 	}
 	else {
 		Game game(first_player, symbol, second_player);
+		game.run();
 	}
 
 }
